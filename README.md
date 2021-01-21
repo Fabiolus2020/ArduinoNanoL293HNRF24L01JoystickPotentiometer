@@ -11,6 +11,9 @@ I did change the PWD frequency for better results
 Youtube:
 https://youtu.be/_wKSMJjRth8
 
+Instructable:
+https://www.instructables.com/Arduino-Nano-Using-NRF24l01-Wirelessly-With-1-Joys/
+
 1 x joystick
 2 x Arduino Nano
 1 x potentiometer
