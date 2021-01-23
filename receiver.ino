@@ -109,8 +109,8 @@ radio.read(&data, sizeof(MyData));
     digitalWrite(in3, HIGH);
     digitalWrite(in4, LOW);
 
-    motorSpeedA = map(data.Potvalue, 0, 1023, 0, 255);
-    motorSpeedB = map(data.Potvalue, 0, 1023, 0, 255);
+    motorSpeedA = map(data.Potvalue, 500, 1023, 0, 255);
+    motorSpeedB = map(data.Potvalue, 500, 1023, 0, 255);
   }
   //Forward
   else if (data.Xvalue > 515) {
@@ -121,8 +121,8 @@ radio.read(&data, sizeof(MyData));
     digitalWrite(in3, LOW);
     digitalWrite(in4, HIGH);
 
-    motorSpeedA = map(data.Potvalue, 0, 1023, 0, 255);
-    motorSpeedB = map(data.Potvalue, 0, 1023, 0, 255);
+    motorSpeedA = map(data.Potvalue, 515, 1023, 0, 255);
+    motorSpeedB = map(data.Potvalue, 515, 1023, 0, 255);
   }
 
   else {
@@ -143,8 +143,8 @@ radio.read(&data, sizeof(MyData));
     digitalWrite(in4, LOW);
 
 
-    motorSpeedA = map(data.Potvalue, 0, 1023, 0, 255);
-    motorSpeedB = map(data.Potvalue, 0, 1023, 0, 255);
+    motorSpeedA = map(data.Potvalue, 450, 1023, 0, 255);
+    motorSpeedB = map(data.Potvalue, 450, 1023, 0, 255);
 
     //  Confine the range from 0 to 255
     if (motorSpeedA < 0) {
@@ -167,8 +167,8 @@ radio.read(&data, sizeof(MyData));
     digitalWrite(in3, LOW);
     digitalWrite(in4, HIGH);
 
-    motorSpeedA = map(data.Potvalue, 0, 1023, 0, 255);
-    motorSpeedB = map(data.Potvalue, 0, 1023, 0, 255);
+    motorSpeedA = map(data.Potvalue, 550, 1023, 0, 255);
+    motorSpeedB = map(data.Potvalue, 550, 1023, 0, 255);
 
 
     if (motorSpeedA > 255) {
