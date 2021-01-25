@@ -1,4 +1,4 @@
-/Code for Available PWM frequency for D3 & D11:
+//Code for Available PWM frequency for D3 & D11:
 //TCCR2B = TCCR2B & B11111000 | B00000001; // for PWM frequency of 31372.55 Hz
 
 //TCCR2B = TCCR2B & B11111000 | B00000010; // for PWM frequency of 3921.16 Hz
@@ -114,8 +114,8 @@ void loop() {
     digitalWrite(in3, LOW);
     digitalWrite(in4, HIGH);
     // Convert the increasing Y-axis readings for going forward from 550 to 1023 into 0 to 255 value for the PWM signal for increasing the motor speed
-    motorSpeedA = map(potValue, 0, 1023, 0, 255);
-    motorSpeedB = map(potValue, 0, 1023, 0, 255);
+    motorSpeedA = map(potValue, 0, 1023, 50, 255);
+    motorSpeedB = map(potValue, 0, 1023, 50, 255);
   }
   // If joystick stays in middle the motors are not moving
   else {
@@ -136,8 +136,8 @@ void loop() {
     digitalWrite(in4, LOW);
 
     // Convert the increasing Y-axis readings for going forward from 550 to 1023 into 0 to 255 value for the PWM signal for increasing the motor speed
-    motorSpeedA = map(potValue, 0, 1000, 0, 255);
-    motorSpeedB = map(potValue, 0, 1000, 0, 255);
+    motorSpeedA = map(potValue, 0, 1000, 50, 255);
+    motorSpeedB = map(potValue, 0, 1000, 50, 255);
   }
 
 
@@ -151,8 +151,8 @@ void loop() {
     digitalWrite(in4, HIGH);
 
     // Convert the increasing Y-axis readings for going forward from 550 to 1023 into 0 to 255 value for the PWM signal for increasing the motor speed
-    motorSpeedA = map(potValue, 0, 1000, 0, 255);
-    motorSpeedB = map(potValue, 0, 1000, 0, 255);
+    motorSpeedA = map(potValue, 0, 1000, 50, 255);
+    motorSpeedB = map(potValue, 0, 1000, 50, 255);
   }
   // Prevent buzzing at low speeds (Adjust according to your motors. My motors couldn't start moving if PWM value was below value of 70)
   if (motorSpeedA < 50) {
