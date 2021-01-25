@@ -4,7 +4,7 @@ This sketch represent 1 joystick controlling motors direction 1 potentiometer co
 
 Project#12
 
-In this project I use a remote and receiver. The remote consist of a potentiometer that will control the speed of the motors and the joystick will handle direction.
+In this project I use a remote and receiver. The remote consist of a potentiometer that will control the speed of the motors and the joystick will handle direction. The IF statement valur for joystick are very high or very low cause I wanted to have repsonse that i trigger only when joystick is fully up/down or left/right
 
 I did change the PWD frequency for better results
 
