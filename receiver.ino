@@ -95,7 +95,7 @@ void loop() {
 
 
   // X-axis used for forward and backward control
-  if (xAxis < 470) {
+  if (xAxis < 50) {
     // Set Motor A backward
     digitalWrite(in1, HIGH);
     digitalWrite(in2, LOW);
@@ -106,7 +106,7 @@ void loop() {
     motorSpeedA = map(potValue, 0, 1023, 50, 255);
     motorSpeedB = map(potValue, 0, 1023, 50, 255);
   }
-  else if (xAxis > 550) {
+  else if (xAxis > 1000) {
     // Set Motor A forward
     digitalWrite(in1, LOW);
     digitalWrite(in2, HIGH);
@@ -126,7 +126,7 @@ void loop() {
 
   // Y-axis used for left and right control
   //this is left
-  if (yAxis < 470) {
+  if (yAxis < 50) {
 
     // Set Motor A forward
     digitalWrite(in1, LOW);
@@ -141,7 +141,7 @@ void loop() {
   }
 
 
-  if (yAxis > 550) {
+  if (yAxis > 1000) {
 
     // Set Motor A forward
     digitalWrite(in1, HIGH);
