@@ -6,7 +6,7 @@
 RF24 radio(8, 9); // CE, CSN
 const byte address[6] = "00001";
 
-char xyData[32] = "";
+char sendingData[32] = "";
 String xAxis, yAxis, potValue;
 
 void setup() {
@@ -24,8 +24,8 @@ void loop() {
   xAxis.toCharArray(sendingData, 5); // Put the String (X Value) into a character array
   radio.write(&sendingData, sizeof(sendingData)); // Send the array data (X value) to the other NRF24L01 modile
   // Y value
-  yAxis.toCharArray(xyData, 5);
-  radio.write(&xyData, sizeof(xyData));
+  yAxis.toCharArray(sendingData, 5);
+  radio.write(&sendingData, sizeof(sendingData));
     // Pot value
   potValue.toCharArray(sendingData, 5);
   radio.write(&sendingData, sizeof(sendingData));
