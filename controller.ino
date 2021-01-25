@@ -1,33 +1,40 @@
+// Library: TMRh20/RF24, https://github.com/tmrh20/RF24/
+
 #include <SPI.h>
 #include <nRF24L01.h>
 #include <RF24.h>
-RF24 radio(8,9); // CE, CSN
+RF24 radio(8, 9); // CE, CSN
+const byte address[6] = "00001";
 
-const uint64_t pipeOut = 0xB3B4B5B6A3LL;//0xE8E8F0F0E1LL; //IMPORTANT: The same as in the receiver
-
-struct MyData {
-  int   Xvalue;
-  int   Yvalue;
-  int   Potvalue;
-};
-
-MyData data;
-
+char xyData[32] = "";
+String xAxis, yAxis, potValue;
 
 void setup() {
   Serial.begin(9600);
   radio.begin();
-  radio.setAutoAck(false);
-  radio.setDataRate(RF24_250KBPS);
-  radio.openWritingPipe(pipeOut);
+  radio.openWritingPipe(address);
+  radio.setPALevel(RF24_PA_MIN);
+  radio.stopListening();
 }
 void loop() {
+  potValue = analogRead(A2); // Read Joysticks X-axis
+  xAxis = analogRead(A0); // Read Joysticks X-axis
+  yAxis = analogRead(A1); // Read Joysticks Y-axis
+  // X value
+  xAxis.toCharArray(sendingData, 5); // Put the String (X Value) into a character array
+  radio.write(&sendingData, sizeof(sendingData)); // Send the array data (X value) to the other NRF24L01 modile
+  // Y value
+  yAxis.toCharArray(xyData, 5);
+  radio.write(&xyData, sizeof(xyData));
+    // Pot value
+  potValue.toCharArray(sendingData, 5);
+  radio.write(&sendingData, sizeof(sendingData));
+  delay(20);
 
-  data.Potvalue = analogRead(A2);
-  data.Yvalue = analogRead(A1);
-  data.Xvalue = analogRead(A0);
-Serial.println(data.Potvalue);
-  
-
-radio.write(&data, sizeof(MyData));
+  Serial.print("Y: ");
+  Serial.println(yAxis);
+    Serial.print("X: ");
+  Serial.println(xAxis);
+    Serial.print("PotValue: ");
+  Serial.println(potValue);
 }
