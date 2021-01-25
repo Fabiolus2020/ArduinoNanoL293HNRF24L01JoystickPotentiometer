@@ -136,8 +136,8 @@ void loop() {
     digitalWrite(in4, LOW);
 
     // Convert the increasing Y-axis readings for going forward from 550 to 1023 into 0 to 255 value for the PWM signal for increasing the motor speed
-    motorSpeedA = map(potValue, 0, 1000, 50, 255);
-    motorSpeedB = map(potValue, 0, 1000, 50, 255);
+    motorSpeedA = map(potValue, 0, 1023, 50, 255);
+    motorSpeedB = map(potValue, 0, 1023, 50, 255);
   }
 
 
@@ -151,8 +151,8 @@ void loop() {
     digitalWrite(in4, HIGH);
 
     // Convert the increasing Y-axis readings for going forward from 550 to 1023 into 0 to 255 value for the PWM signal for increasing the motor speed
-    motorSpeedA = map(potValue, 0, 1000, 50, 255);
-    motorSpeedB = map(potValue, 0, 1000, 50, 255);
+    motorSpeedA = map(potValue, 0, 1023, 50, 255);
+    motorSpeedB = map(potValue, 0, 1023, 50, 255);
   }
   // Prevent buzzing at low speeds (Adjust according to your motors. My motors couldn't start moving if PWM value was below value of 70)
   if (motorSpeedA < 50) {
