@@ -1,4 +1,4 @@
-//Code for Available PWM frequency for D3 & D11:
+/Code for Available PWM frequency for D3 & D11:
 //TCCR2B = TCCR2B & B11111000 | B00000001; // for PWM frequency of 31372.55 Hz
 
 //TCCR2B = TCCR2B & B11111000 | B00000010; // for PWM frequency of 3921.16 Hz
@@ -36,161 +36,131 @@
 //TCCR1B = TCCR1B & B11111000 | B00000100; // for PWM frequency of 122.55 Hz
 
 //TCCR1B = TCCR1B & B11111000 | B00000101; // for PWM frequency of 30.64 Hz
+// Library: TMRh20/RF24, https://github.com/tmrh20/RF24/
 
 #include <SPI.h>
 #include <nRF24L01.h>
 #include <RF24.h>
-
-#define enB 5
-#define enA 6
-
-#define in1 7
-#define in2 10
-#define in3 4
-#define in4 2
-
 RF24 radio(8, 9); // CE, CSN
-const uint64_t pipeIn =  0xB3B4B5B6A3LL;//0xE8E8F0F0E1LL64 bit encrypicted code
+const byte address[6] = "00001";
 
-struct MyData {
-  int   Xvalue;
-  int   Yvalue;
-  int   Potvalue;
-};
+char receivedData[32] = "";
+int  xAxis, yAxis, potValue;
 
-MyData data;
+#define enA 10   // Note: Pin 9 in previous video ( pin 10 is used for the SPI communication of the NRF24L01)
+#define in1 4
+#define in2 5
+#define enB 3   // Note:  Pin 10 in previous video
+#define in3 6
+#define in4 7
+
+
 
 int motorSpeedA = 0;
 int motorSpeedB = 0;
 
-
 void setup() {
-
-  Serial.begin(9600);
-  radio.begin();
-  radio.setDataRate(RF24_250KBPS); // Both endpoints must have this set the same
-  radio.setAutoAck(false);
-  radio.openReadingPipe(1, pipeIn);
-  radio.startListening();
-
-//Set PWM frequency for pin 6 and 5 on ENA and ENB
-TCCR0B = TCCR0B & B11111000 | B00000001; // for PWM frequency of 62500.00 Hz
-
-  // Define Pins
   pinMode(enA, OUTPUT);
   pinMode(enB, OUTPUT);
   pinMode(in1, OUTPUT);
   pinMode(in2, OUTPUT);
   pinMode(in3, OUTPUT);
   pinMode(in4, OUTPUT);
-
-
-  digitalWrite(in1, LOW);
-  digitalWrite(in2, LOW);
-  digitalWrite(in3, LOW);
-  digitalWrite(in4, LOW);
+  Serial.begin(9600);
+  radio.begin();
+  radio.openReadingPipe(0, address);
+  radio.setPALevel(RF24_PA_MIN);
+  radio.startListening();
 }
+
+
 void loop() {
-
   if (radio.available()) {   // If the NRF240L01 module received data
+    radio.read(&receivedData, sizeof(receivedData)); // Read the data and put it into character array
+    xAxis = atoi(&receivedData[0]); // Convert the data from the character array (received X value) into integer
+    delay(10);
+    radio.read(&receivedData, sizeof(receivedData));
+    yAxis = atoi(&receivedData[0]);
 
-    Serial.print("X:");
-    Serial.print(data.Xvalue);
-    Serial.print("      Y");
-    Serial.println(data.Yvalue);
-radio.read(&data, sizeof(MyData));
+    radio.read(&receivedData, sizeof(receivedData));
+    potValue = atoi(&receivedData[0]);
+    delay(10);
+    Serial.print("X : ");
+    Serial.println(xAxis);
+    Serial.print("Y : ");
+    Serial.println(yAxis);
+    Serial.print("PotValue : ");
+    Serial.println(potValue);
   }
 
-  if (data.Xvalue < 500) {
-    //Backward
+
+  // X-axis used for forward and backward control
+  if (xAxis < 470) {
+    // Set Motor A backward
     digitalWrite(in1, HIGH);
     digitalWrite(in2, LOW);
-
+    // Set Motor B backward
     digitalWrite(in3, HIGH);
     digitalWrite(in4, LOW);
-
-    motorSpeedA = map(data.Potvalue, 500, 1023, 0, 255);
-    motorSpeedB = map(data.Potvalue, 500, 1023, 0, 255);
+    // Convert the declining Y-axis readings for going backward from 470 to 0 into 0 to 255 value for the PWM signal for increasing the motor speed
+    motorSpeedA = map(potValue, 0, 1023, 50, 255);
+    motorSpeedB = map(potValue, 0, 1023, 50, 255);
   }
-  //Forward
-  else if (data.Xvalue > 515) {
-
+  else if (xAxis > 550) {
+    // Set Motor A forward
     digitalWrite(in1, LOW);
     digitalWrite(in2, HIGH);
-
+    // Set Motor B forward
     digitalWrite(in3, LOW);
     digitalWrite(in4, HIGH);
-
-    motorSpeedA = map(data.Potvalue, 515, 1023, 0, 255);
-    motorSpeedB = map(data.Potvalue, 515, 1023, 0, 255);
+    // Convert the increasing Y-axis readings for going forward from 550 to 1023 into 0 to 255 value for the PWM signal for increasing the motor speed
+    motorSpeedA = map(potValue, 0, 1023, 0, 255);
+    motorSpeedB = map(potValue, 0, 1023, 0, 255);
   }
-
+  // If joystick stays in middle the motors are not moving
   else {
     motorSpeedA = 0;
     motorSpeedB = 0;
   }
 
-  if (data.Yvalue < 450) {
-    //THIS IS LEFT
 
-    // Set Motor A backward
+  // Y-axis used for left and right control
+  //this is left
+  if (yAxis < 470) {
+
+    // Set Motor A forward
     digitalWrite(in1, LOW);
     digitalWrite(in2, HIGH);
-
-    // Set Motor B forward
-
+    // Set Motor B backward
     digitalWrite(in3, HIGH);
     digitalWrite(in4, LOW);
 
-
-    motorSpeedA = map(data.Potvalue, 450, 1023, 0, 255);
-    motorSpeedB = map(data.Potvalue, 450, 1023, 0, 255);
-
-    //  Confine the range from 0 to 255
-    if (motorSpeedA < 0) {
-      motorSpeedA = 0;
-    }
-    if (motorSpeedB > 255) {
-      motorSpeedB = 255;
-    }
+    // Convert the increasing Y-axis readings for going forward from 550 to 1023 into 0 to 255 value for the PWM signal for increasing the motor speed
+    motorSpeedA = map(potValue, 0, 1000, 0, 255);
+    motorSpeedB = map(potValue, 0, 1000, 0, 255);
   }
 
-  if (data.Yvalue > 550) {
-    //THIS IS RIGHT
+
+  if (yAxis > 550) {
 
     // Set Motor A forward
     digitalWrite(in1, HIGH);
     digitalWrite(in2, LOW);
-
     // Set Motor B backward
-
     digitalWrite(in3, LOW);
     digitalWrite(in4, HIGH);
 
-    motorSpeedA = map(data.Potvalue, 550, 1023, 0, 255);
-    motorSpeedB = map(data.Potvalue, 550, 1023, 0, 255);
-
-
-    if (motorSpeedA > 255) {
-      motorSpeedA = 255;
-    }
-    if (motorSpeedB < 0) {
-      motorSpeedB = 0;
-    }
+    // Convert the increasing Y-axis readings for going forward from 550 to 1023 into 0 to 255 value for the PWM signal for increasing the motor speed
+    motorSpeedA = map(potValue, 0, 1000, 0, 255);
+    motorSpeedB = map(potValue, 0, 1000, 0, 255);
   }
-
-  //prevent noise
-  if (motorSpeedA < 70) {
+  // Prevent buzzing at low speeds (Adjust according to your motors. My motors couldn't start moving if PWM value was below value of 70)
+  if (motorSpeedA < 50) {
     motorSpeedA = 0;
   }
-  if (motorSpeedB < 70) {
+  if (motorSpeedB < 50) {
     motorSpeedB = 0;
   }
-
-
   analogWrite(enA, motorSpeedA); // Send PWM signal to motor A
   analogWrite(enB, motorSpeedB); // Send PWM signal to motor B
-
- 
- 
 }
