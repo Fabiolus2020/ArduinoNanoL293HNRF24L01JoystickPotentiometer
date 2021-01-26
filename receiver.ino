@@ -50,9 +50,9 @@ void setup() {
   pinMode(in2, OUTPUT);
   pinMode(in3, OUTPUT);
   pinMode(in4, OUTPUT);
+   // Set Motor to low initially
   digitalWrite(in1, LOW);
   digitalWrite(in2, LOW);
-  // Set Motor to low initially
   digitalWrite(in3, LOW);
   digitalWrite(in4, LOW);
   digitalWrite(enA, LOW);
