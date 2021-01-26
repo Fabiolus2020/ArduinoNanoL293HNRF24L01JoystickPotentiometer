@@ -3,40 +3,62 @@
 #include <SPI.h>
 #include <nRF24L01.h>
 #include <RF24.h>
-RF24 radio(8, 9); // CE, CSN
+RF24 myRadio(8, 9); // CE, CSN
+
+//address through which two modules communicate.
 const byte address[6] = "00001";
 
-char sendingData[32] = "";
-String xAxis, yAxis, potValue;
+
+
+
+
+struct package
+{
+  int joyposX;
+  int joyposY;
+  int potValue;
+};
+
+typedef struct package Package;
+Package data;
+
+// Define Joystick Connections
+#define joyX A0
+#define joyY A1
+#define readPot A2
+
+// Define Joystick Values - Start at 512 (middle position)
+int joyposX = 512;
+int joyposY = 512;
 
 void setup() {
   Serial.begin(9600);
-  radio.begin();
-  radio.openWritingPipe(address);
-  radio.setPALevel(RF24_PA_MIN);//PA_MAX did not produce great result
-  radio.setChannel(115);
-  radio.setDataRate( RF24_250KBPS );
-  radio.stopListening();
+  myRadio.begin();
+
+  //set the address
+  myRadio.openWritingPipe(address);
+  myRadio.setPALevel(RF24_PA_MAX);
+  myRadio.setDataRate( RF24_250KBPS );
+  myRadio.setChannel(115);
+
+  //Set module as transmitter
+  myRadio.stopListening();
+
+  delay(10);
 }
 void loop() {
-  potValue = analogRead(A2); // Read Joysticks X-axis
-  xAxis = analogRead(A0); // Read Joysticks X-axis
-  yAxis = analogRead(A1); // Read Joysticks Y-axis
-  // X value
-  xAxis.toCharArray(sendingData, 5); // Put the String (X Value) into a character array
-  radio.write(&sendingData, sizeof(sendingData)); // Send the array data (X value) to the other NRF24L01 modile
-  // Y value
-  yAxis.toCharArray(sendingData, 5);
-  radio.write(&sendingData, sizeof(sendingData));
-    // Pot value
-  potValue.toCharArray(sendingData, 5);
-  radio.write(&sendingData, sizeof(sendingData));
-  delay(20);
+  myRadio.write(&data, sizeof(data));
 
-  Serial.print("Y: ");
-  Serial.println(yAxis);
-    Serial.print("X: ");
-  Serial.println(xAxis);
-    Serial.print("PotValue: ");
-  Serial.println(potValue);
+  data.joyposX = analogRead(joyX);
+  data.joyposY = analogRead(joyY);
+  data.potValue = analogRead(readPot);
+
+  //Serial.print("xAxis :");
+  //Serial.println(data.joyposX);
+  //Serial.print("yAxis :");
+  //Serial.println(data.joyposY);
+ // Serial.print("PotValue :");
+ // Serial.println(data.potValue);
+  delay(10);
+
 }
